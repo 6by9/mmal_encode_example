@@ -33,6 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "interface/vcos/vcos.h"
 #include <stdio.h>
 
+#define WIDTH 720
+#define HEIGHT 540
 #define NUM_OUTPUT_BUFFERS 500
 
 #define CHECK_STATUS(status, msg) if (status != MMAL_SUCCESS) { fprintf(stderr, msg"\n"); goto error; }
@@ -92,10 +94,10 @@ int main(int argc, char **argv)
    MMAL_ES_FORMAT_T *format_in = encoder->input[0]->format;
    format_in->type = MMAL_ES_TYPE_VIDEO;
    format_in->encoding = MMAL_ENCODING_YUYV;
-   format_in->es->video.width = 720;
-   format_in->es->video.height = 540;
-   format_in->es->video.crop.width = 720;
-   format_in->es->video.crop.height = 540;
+   format_in->es->video.width = VCOS_ALIGN_UP(WIDTH, 32);
+   format_in->es->video.height = VCOS_ALIGN_UP(HEIGHT, 16);
+   format_in->es->video.crop.width = WIDTH;
+   format_in->es->video.crop.height = HEIGHT;
    format_in->es->video.frame_rate.num = 120;
    format_in->es->video.frame_rate.den = 1;
    format_in->es->video.par.num = 1;
@@ -111,8 +113,8 @@ int main(int argc, char **argv)
    MMAL_ES_FORMAT_T *format_out = encoder->output[0]->format;
    format_out->type = MMAL_ES_TYPE_VIDEO;
    format_out->encoding = MMAL_ENCODING_H264;
-   format_out->es->video.width = 720;
-   format_out->es->video.height = 540;
+   format_out->es->video.width = WIDTH;
+   format_out->es->video.height = HEIGHT;
    format_out->es->video.frame_rate.num = 120;
    format_out->es->video.frame_rate.den = 1;
    format_out->bitrate = 10000000;
